@@ -1,0 +1,353 @@
+// 作品数据
+const worksData = [
+    {
+        id: 1,
+        title: '法相真相',
+        category: '影视制作',
+        description: '三星堆主题影视片头，探索历史与真相的视觉呈现',
+        concept: '通过金色面具与泥土元素的对比，营造神秘而庄重的氛围，展现三星堆文化的深邃与厚重。',
+        date: '2026-03-11',
+        thumbnail: '片头封面.png',
+        video: 'bilibili',
+        bilibili_url: 'https://www.bilibili.com/video/BV1X8ckzdEFn?vd_source=55df652919e3807d08c6fb98257009c9'
+    },
+    {
+        id: 2,
+        title: '建模动画',
+        category: '三维设计',
+        description: '通过3D建模技术，探索几何形状与色彩的动态视觉效果',
+        concept: '运用现代3D建模技术，创建具有视觉冲击力的几何形态，通过动画展示色彩与空间的关系，探索数字艺术的无限可能。',
+        date: '2026-02-01',
+        thumbnail: '建模封面.png',
+        video: 'bilibili',
+        bilibili_url: 'https://www.bilibili.com/video/BV1h8ckzdEZr?vd_source=55df652919e3807d08c6fb98257009c9'
+    },
+    {
+        id: 3,
+        title: 'MV制作',
+        category: '影视制作',
+        description: '音乐视频制作，融合视觉艺术与音乐表达',
+        concept: '通过创意视觉设计，将音乐情感转化为视觉语言，创造出具有艺术感染力的音乐视频作品。',
+        date: '2026-02-15',
+        thumbnail: 'mv封面.png',
+        video: 'bilibili',
+        bilibili_url: 'https://www.bilibili.com/video/BV1tZcrzUEHe?vd_source=55df652919e3807d08c6fb98257009c9'
+    },
+    {
+        id: 4,
+        title: '科普视频',
+        category: '影视制作',
+        description: '通过视觉化手段，普及科学知识与文化内涵',
+        concept: '将复杂的科学概念转化为生动有趣的视觉内容，通过动画和特效，使科普知识更加易于理解和接受。',
+        date: '2026-03-01',
+        thumbnail: '尘埃封面.png',
+        video: 'bilibili',
+        bilibili_url: 'https://www.bilibili.com/video/BV12ZcrzmESv?vd_source=55df652919e3807d08c6fb98257009c9'
+    },
+    {
+        id: 5,
+        title: '活动宣传',
+        category: '影视制作',
+        description: '品牌活动宣传视频，融合创意与视觉表达',
+        concept: '通过精心策划的视觉效果和动态画面，为品牌活动创造引人入胜的宣传内容，提升品牌影响力和活动参与度。',
+        date: '2026-03-10',
+        thumbnail: '五粮液封面.jpg',
+        video: 'bilibili',
+        bilibili_url: 'https://www.bilibili.com/video/BV1mZcrzmEe6?vd_source=55df652919e3807d08c6fb98257009c9'
+    },
+    {
+        id: 6,
+        title: '工程汇报',
+        category: '影视制作',
+        description: '三峡工程主题汇报视频，融合工程技术与视觉艺术',
+        concept: '通过专业的视觉表现手法，将复杂的工程数据和建设过程转化为清晰易懂的视觉内容，展现三峡工程的宏伟与技术创新。',
+        date: '2026-03-15',
+        thumbnail: '三峡工程封面.jpg',
+        video: 'bilibili',
+        bilibili_url: 'https://www.bilibili.com/video/BV12cckz1EGb?vd_source=55df652919e3807d08c6fb98257009c9'
+    }
+];
+
+// DOM 元素
+const worksGrid = document.querySelector('.works-grid');
+const workDetail = document.getElementById('work-detail');
+const backButton = document.querySelector('.back-button');
+const workDetailTitle = document.querySelector('.work-detail-title');
+const workDetailImage = document.querySelector('.work-detail-image');
+const workDetailCategory = document.querySelector('.work-detail-category');
+const workDetailDescription = document.querySelector('.work-detail-description');
+const workDetailConcept = document.querySelector('.work-detail-concept');
+const workDetailDate = document.querySelector('.work-detail-date');
+const header = document.querySelector('.header');
+
+// 初始化函数
+function init() {
+    renderWorks();
+    initWorkDetail();
+    initScrollAnimation();
+    initHeaderScroll();
+    initRippleEffect();
+}
+
+// 渲染作品网格
+function renderWorks() {
+    worksData.forEach(work => {
+        const workItem = document.createElement('div');
+        workItem.className = 'work-item fade-in ripple';
+        workItem.dataset.id = work.id;
+        workItem.innerHTML = `
+            <div class="work-thumbnail">
+                <img src="${work.thumbnail}" alt="${work.title}">
+            </div>
+            <div class="work-info">
+                <p class="work-category">${work.category}</p>
+                <h3 class="work-title">${work.title}</h3>
+                <p class="work-description">${work.description}</p>
+            </div>
+        `;
+        worksGrid.appendChild(workItem);
+    });
+}
+
+// 初始化作品详细页
+function initWorkDetail() {
+    // 打开作品详细页
+    document.addEventListener('click', (e) => {
+        const workItem = e.target.closest('.work-item');
+        if (workItem) {
+            const workId = parseInt(workItem.dataset.id);
+            const work = worksData.find(item => item.id === workId);
+            if (work) {
+                // 填充详细页内容
+                workDetailTitle.textContent = work.title;
+                // 检查是否有视频
+                if (work.video) {
+                    if (work.video === 'bilibili' && work.bilibili_url) {
+                        // 提取BV号
+                        const bvMatch = work.bilibili_url.match(/BV[0-9A-Za-z]+/);
+                        const bvId = bvMatch ? bvMatch[0] : '';
+                        if (bvId) {
+                            workDetailImage.innerHTML = `
+                                <iframe src="https://player.bilibili.com/player.html?bvid=${bvId}&page=1" 
+                                        scrolling="no" border="0" frameborder="no" framespacing="0" 
+                                        allowfullscreen="true" width="100%" height="100%"></iframe>
+                            `;
+                        } else {
+                            workDetailImage.innerHTML = `<img src="${work.thumbnail}" alt="${work.title}">`;
+                        }
+                    } else {
+                        workDetailImage.innerHTML = `
+                            <video controls width="100%" height="100%" style="object-fit: cover;">
+                                <source src="${work.video}" type="video/mp4">
+                                您的浏览器不支持视频播放
+                            </video>
+                        `;
+                    }
+                } else {
+                    workDetailImage.innerHTML = `<img src="${work.thumbnail}" alt="${work.title}">`;
+                }
+                workDetailCategory.textContent = work.category;
+                workDetailDescription.textContent = work.description;
+                workDetailConcept.textContent = `设计理念: ${work.concept}`;
+                workDetailDate.textContent = `完成时间: ${work.date}`;
+                
+                // 显示详细页
+                workDetail.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+    });
+
+    // 关闭作品详细页
+    backButton.addEventListener('click', () => {
+        workDetail.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        // 停止视频播放
+        const video = workDetailImage.querySelector('video');
+        if (video) {
+            video.pause();
+            video.currentTime = 0;
+        }
+    });
+}
+
+// 初始化滚动动画
+function initScrollAnimation() {
+    const fadeElements = document.querySelectorAll('.fade-in');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    fadeElements.forEach(element => {
+        observer.observe(element);
+    });
+}
+
+// 初始化头部滚动效果
+function initHeaderScroll() {
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 100) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+}
+
+// 初始化波纹效果
+function initRippleEffect() {
+    const rippleElements = document.querySelectorAll('.ripple');
+    rippleElements.forEach(element => {
+        element.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            ripple.style.position = 'absolute';
+            ripple.style.borderRadius = '50%';
+            ripple.style.backgroundColor = 'rgba(255, 59, 48, 0.3)';
+            ripple.style.transform = 'scale(0)';
+            ripple.style.animation = 'ripple 0.6s linear';
+            ripple.style.left = (e.clientX - rect.left) + 'px';
+            ripple.style.top = (e.clientY - rect.top) + 'px';
+            this.appendChild(ripple);
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+}
+
+// 添加波纹动画
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// 页面加载完成后初始化
+window.addEventListener('DOMContentLoaded', init);
+
+// 平滑滚动到锚点
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop - 100,
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+// 几何图形滚动视差效果
+window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const geometricShapes = document.querySelectorAll('.geometric-shape');
+    
+    geometricShapes.forEach((shape, index) => {
+        const depth = (index + 1) * 0.02; // 不同深度的视差效果
+        const moveY = scrollY * depth;
+        const moveX = Math.sin(scrollY * 0.01 + index) * 10;
+        const rotate = scrollY * 0.05 + index * 5;
+        
+        shape.style.transform = `translateY(${moveY}px) translateX(${moveX}px) rotate(${rotate}deg) translateZ(${shape.style.transform.match(/-?\d+px/)?.[0] || '0px'})`;
+    });
+});
+
+// 音频可视化效果
+function initAudioVisualization() {
+    const audio = document.getElementById('background-music');
+    const geometricShapes = document.querySelectorAll('.geometric-shape');
+    
+    // 检查浏览器是否支持Web Audio API
+    if (!window.AudioContext && !window.webkitAudioContext) {
+        console.log('Web Audio API 不被支持');
+        return;
+    }
+    
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioContext = new AudioContext();
+    const source = audioContext.createMediaElementSource(audio);
+    const analyser = audioContext.createAnalyser();
+    
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+    
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    
+    // 尝试自动播放音乐
+    function playAudio() {
+        audio.play().catch(e => {
+            console.log('需要用户交互才能播放音频');
+            // 添加用户交互事件
+            document.addEventListener('click', () => {
+                audio.play();
+            }, { once: true });
+        });
+    }
+    
+    // 页面加载时尝试播放
+    playAudio();
+    
+    // 同时添加用户交互事件作为备份
+    document.addEventListener('click', playAudio, { once: true });
+    document.addEventListener('touchstart', playAudio, { once: true });
+    
+    // 动画循环
+    function animate() {
+        requestAnimationFrame(animate);
+        
+        analyser.getByteFrequencyData(dataArray);
+        
+        // 计算音频能量
+        let sum = 0;
+        for (let i = 0; i < bufferLength; i++) {
+            sum += dataArray[i];
+        }
+        const average = sum / bufferLength;
+        const intensity = average / 128; // 归一化到0-1
+        
+        // 根据音频节奏调整几何图形
+        geometricShapes.forEach((shape, index) => {
+            const scale = 1 + intensity * 0.3;
+            const opacity = 0.1 + intensity * 0.2;
+            
+            // 保持原有的变换效果，添加缩放和透明度变化
+            const originalTransform = shape.style.transform || '';
+            const transformParts = originalTransform.match(/translateZ\((-?\d+px)\)/);
+            const zIndex = transformParts ? transformParts[1] : '0px';
+            
+            // 计算新的变换
+            const scrollY = window.scrollY;
+            const depth = (index + 1) * 0.02;
+            const moveY = scrollY * depth;
+            const moveX = Math.sin(scrollY * 0.01 + index) * 10;
+            const rotate = scrollY * 0.05 + index * 5 + intensity * 10;
+            
+            shape.style.transform = `translateY(${moveY}px) translateX(${moveX}px) rotate(${rotate}deg) scale(${scale}) translateZ(${zIndex})`;
+            shape.style.opacity = opacity;
+        });
+    }
+    
+    animate();
+}
+
+// 初始化音频可视化
+window.addEventListener('DOMContentLoaded', initAudioVisualization);
